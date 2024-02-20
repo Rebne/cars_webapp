@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -116,22 +117,55 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
+func getData(s string, ptr interface{}) error {
+	response, err := http.Get(s)
+	if err != nil {
+		fmt.Printf("Failed to fetch data: %v\n", err)
+		return err
+	}
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Printf("Failed to read response body: %v\n", err)
+		return err
+	}
+
+	if err := json.Unmarshal(body, ptr); err != nil {
+		fmt.Printf("Failed to unmarshal JSON: %v\n", err)
+		return err
+	}
+
+	return nil
+}
+
 // getCarDataFromAPI reads the car data from the data.json file
 func getCarDataFromAPI() (CarData, error) {
-	// Read the car data from the data.json file
-	dataJSON, err := os.ReadFile("api/data.json")
-	if err != nil {
+	modelsEndpoint := "http://localhost:3000/api/models"
+	manufacturerEndpoint := "http://localhost:3000/api/manufacturers"
+	categoriesEndpoint := "http://localhost:3000/api/categories"
+
+	var manufacturers []Manufacturer
+	var models []CarModel
+	var categories []Category
+
+	if err := getData(manufacturerEndpoint, &manufacturers); err != nil {
 		return CarData{}, err
 	}
 
-	// Create a struct to unmarshal the JSON response
-	var carData CarData
-	err = json.Unmarshal(dataJSON, &carData)
-	if err != nil {
+	if err := getData(modelsEndpoint, &models); err != nil {
 		return CarData{}, err
 	}
 
-	return carData, nil
+	if err := getData(categoriesEndpoint, &categories); err != nil {
+		return CarData{}, err
+	}
+
+	return CarData{
+		Manufacturers: manufacturers,
+		CarModels:     models,
+		Categories:    categories,
+	}, nil
 }
 
 // renderTemplate renders an HTML template with car data
