@@ -107,7 +107,7 @@ func main() {
 	})
 
 	// Serve static files (HTML, CSS, JavaScript) from the current directory
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("."))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	// Handle API requests
 	http.HandleFunc("/api/car/", APIHandler)
