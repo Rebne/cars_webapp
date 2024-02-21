@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 )
 
 // CarData contains the structure of the JSON data
@@ -51,27 +50,6 @@ type CarSpecifications struct {
 	Drivetrain   string `json:"drivetrain"`
 }
 
-func APIHandler(w http.ResponseWriter, r *http.Request) {
-	// Extract car ID from the request URL
-	_, err := strconv.Atoi(r.URL.Path[len("/api/car/"):])
-	if err != nil {
-		http.Error(w, "Invalid car ID", http.StatusBadRequest)
-		return
-	}
-
-	// Call the function to get car details from the API
-	carDetails, err := getCarDataFromAPI()
-	if err != nil {
-		fmt.Println("Error getting car details from API:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// Respond with the car details as JSON
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(carDetails)
-}
-
 // GetManufacturerName returns the name of the manufacturer based on the given ID
 func GetManufacturerName(manufacturerID int, carData CarData) string {
 	for _, m := range carData.Manufacturers {
@@ -109,8 +87,6 @@ func main() {
 
 	// Serve static files (HTML, CSS, JavaScript) from the current directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	// Handle API requests
-	http.HandleFunc("/api/car/", APIHandler)
 
 	// Start the web server on port 8080
 	fmt.Println("Server is running on http://localhost:8080")
