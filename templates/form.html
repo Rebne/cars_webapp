@@ -23,7 +23,7 @@
         </tr>
         {{range .CarData.CarModels}}
         <tr class="expandable-row" data-id="{{.ID}}">
-            <td><img src="{{.Image}}" alt="{{.Name}} Image" width="100"></td>
+            <td><img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="100"></td>
             <td>{{.Name}}</td>
             <td>{{GetManufacturerName .ManufacturerID $.CarData}}</td>
             <td>{{GetCategoryName .CategoryID $.CarData}}</td>
