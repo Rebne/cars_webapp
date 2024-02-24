@@ -6,8 +6,12 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <title>Car Data</title>
     <style>
-        .hidden {
+        .hidden-content {
             display: none;
+        }
+
+        details[open] .hidden-content {
+            display: table-row;
         }
     </style>
 </head>
@@ -22,41 +26,29 @@
             <th>Year</th>
         </tr>
         {{range .CarData.CarModels}}
-        <tr class="expandable-row" data-id="{{.ID}}">
-            <td><img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="100"></td>
+        <tr>
+            <td>
+                <details>
+                    <summary>
+                        <img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="150">
+                    </summary>
+                    <div class="hidden-content">
+                        <strong>Specifications:</strong>
+                        <ul>
+                            <li>Engine: {{.Specifications.Engine}}</li>
+                            <li>Horsepower: {{.Specifications.Horsepower}}</li>
+                            <li>Transmission: {{.Specifications.Transmission}}</li>
+                            <li>Drivetrain: {{.Specifications.Drivetrain}}</li>
+                        </ul>
+                    </div>
+                </details>
+            </td>
             <td>{{.Name}}</td>
             <td>{{GetManufacturerName .ManufacturerID $.CarData}}</td>
             <td>{{GetCategoryName .CategoryID $.CarData}}</td>
             <td>{{.Year}}</td>
         </tr>
-        <tr class="hidden" id="details-{{.ID}}">
-            <td colspan="5">
-                <div>
-                    <strong>Specifications:</strong>
-                    <ul>
-                        <li>Engine: {{.Specifications.Engine}}</li>
-                        <li>Horsepower: {{.Specifications.Horsepower}}</li>
-                        <li>Transmission: {{.Specifications.Transmission}}</li>
-                        <li>Drivetrain: {{.Specifications.Drivetrain}}</li>
-                    </ul>
-                </div>
-            </td>
-        </tr>
         {{end}}
     </table>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const rows = document.querySelectorAll(".expandable-row");
-
-            rows.forEach(row => {
-                row.addEventListener("click", function() {
-                    const id = row.getAttribute("data-id");
-                    const detailsRow = document.getElementById(`details-${id}`);
-                    detailsRow.classList.toggle("hidden");
-                });
-            });
-        });
-    </script>
 </body>
 </html>
