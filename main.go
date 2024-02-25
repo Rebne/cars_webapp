@@ -9,7 +9,6 @@ import (
 	"os"
 	"path"
 	"sync"
-	"time"
 )
 
 // CarData contains the structure of the JSON data
@@ -92,16 +91,12 @@ func main() {
 
 	// Start the web server on port 8080
 	fmt.Println("Server is running on http://localhost:8080")
-	fmt.Println("This is the test WITH goroutines")
 	http.ListenAndServe(":8080", nil)
 }
 
 func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {
 
-	client := http.Client{
-		Timeout: time.Second * 5,
-	}
-	response, err := client.Get(s)
+	response, err := http.Get(s)
 	if err != nil {
 		fmt.Printf("Failed to fetch data: %v\n", err)
 		ch <- err
@@ -131,7 +126,6 @@ func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {
 // getCarDataFromAPI reads the car data from the data.json file
 func getCarDataFromAPI() (CarData, error) {
 
-	start := time.Now()
 	modelsEndpoint := "http://localhost:3000/api/models"
 	manufacturerEndpoint := "http://localhost:3000/api/manufacturers"
 	categoriesEndpoint := "http://localhost:3000/api/categories"
@@ -167,7 +161,6 @@ func getCarDataFromAPI() (CarData, error) {
 		return CarData{}, err
 	}
 
-	fmt.Println("Time it took to get data from API: ", time.Since(start))
 	return CarData{
 		Manufacturers: manufacturers,
 		CarModels:     models,
