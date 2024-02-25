@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"sync"
 )
 
@@ -51,14 +52,21 @@ type CarSpecifications struct {
 	Drivetrain   string `json:"drivetrain"`
 }
 
-// GetManufacturerName returns the name of the manufacturer based on the given ID
-func GetManufacturerName(manufacturerID int, carData CarData) string {
-	for _, m := range carData.Manufacturers {
-		if m.ID == manufacturerID {
-			return m.Name
+// GetManufacturerData returns the specified details (e.g., "Country" or "FoundingYear") of the manufacturer.
+func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
+	for _, manufacturer := range carData.Manufacturers {
+		if manufacturer.ID == manufacturerID {
+			switch detailType {
+			case "Country":
+				return manufacturer.Country
+			case "Name":
+				return manufacturer.Name
+			case "FoundingYear":
+				return strconv.Itoa(manufacturer.FoundingYear)
+			}
 		}
 	}
-	return "Unknown Manufacturer"
+	return ""
 }
 
 // GetCategoryName returns the name of the category based on the given ID
@@ -183,7 +191,7 @@ func renderTemplate(w http.ResponseWriter, data CarData) {
 
 	// Parse the HTML template
 	tmpl, err := template.New("form.html").Funcs(template.FuncMap{
-		"GetManufacturerName": GetManufacturerName,
+		"GetManufacturerData": GetManufacturerData,
 		"GetCategoryName":     GetCategoryName,
 	}).ParseFiles(templatePath)
 

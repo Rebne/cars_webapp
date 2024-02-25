@@ -44,7 +44,20 @@
                 </details>
             </td>
             <td>{{.Name}}</td>
-            <td>{{GetManufacturerName .ManufacturerID $.CarData}}</td>
+            <td>
+                <details>
+                    <summary>
+                        {{GetManufacturerData .ManufacturerID $.CarData "Name"}}
+                    </summary>
+                    <div class="hidden-content">
+                        <strong>Info:</strong>
+                        <ul>
+                            <li>Country: {{GetManufacturerData .ManufacturerID $.CarData "Country"}}</li>
+                            <li>Founding year: {{GetManufacturerData .ManufacturerID $.CarData "FoundingYear"}}</li>
+                        </ul>
+                    </div>
+                </details>
+            </td>
             <td>{{GetCategoryName .CategoryID $.CarData}}</td>
             <td>{{.Year}}</td>
         </tr>

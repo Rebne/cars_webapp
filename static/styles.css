@@ -18,3 +18,11 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+.hidden-content {
+    display: none;
+}
+
+details[open] .hidden-content {
+    display: table-row;
+}
