@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
+	"time"
 )
 
 // CarData contains the structure of the JSON data
@@ -90,33 +92,46 @@ func main() {
 
 	// Start the web server on port 8080
 	fmt.Println("Server is running on http://localhost:8080")
+	fmt.Println("This is the test WITH goroutines")
 	http.ListenAndServe(":8080", nil)
 }
 
-func getData(s string, ptr interface{}) error {
-	response, err := http.Get(s)
+func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {
+
+	client := http.Client{
+		Timeout: time.Second * 5,
+	}
+	response, err := client.Get(s)
 	if err != nil {
 		fmt.Printf("Failed to fetch data: %v\n", err)
-		return err
+		ch <- err
+		wg.Done()
+		return
 	}
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Printf("Failed to read response body: %v\n", err)
-		return err
+		ch <- err
+		wg.Done()
+		return
 	}
 
 	if err := json.Unmarshal(body, ptr); err != nil {
 		fmt.Printf("Failed to unmarshal JSON: %v\n", err)
-		return err
+		ch <- err
+		wg.Done()
+		return
 	}
 
-	return nil
+	wg.Done()
 }
 
 // getCarDataFromAPI reads the car data from the data.json file
 func getCarDataFromAPI() (CarData, error) {
+
+	start := time.Now()
 	modelsEndpoint := "http://localhost:3000/api/models"
 	manufacturerEndpoint := "http://localhost:3000/api/manufacturers"
 	categoriesEndpoint := "http://localhost:3000/api/categories"
@@ -124,24 +139,40 @@ func getCarDataFromAPI() (CarData, error) {
 	var manufacturers []Manufacturer
 	var models []CarModel
 	var categories []Category
+	wg := &sync.WaitGroup{}
+	errch := make(chan error)
 
-	if err := getData(manufacturerEndpoint, &manufacturers); err != nil {
+	wg.Add(3)
+
+	go getData(manufacturerEndpoint, &manufacturers, errch, wg)
+
+	go getData(modelsEndpoint, &models, errch, wg)
+
+	go getData(categoriesEndpoint, &categories, errch, wg)
+
+	wg.Wait()
+
+	close(errch)
+
+	var err error
+
+	for e := range errch {
+		if e != nil {
+			err = e
+			break
+		}
+	}
+
+	if err != nil {
 		return CarData{}, err
 	}
 
-	if err := getData(modelsEndpoint, &models); err != nil {
-		return CarData{}, err
-	}
-
-	if err := getData(categoriesEndpoint, &categories); err != nil {
-		return CarData{}, err
-	}
-
+	fmt.Println("Time it took to get data from API: ", time.Since(start))
 	return CarData{
 		Manufacturers: manufacturers,
 		CarModels:     models,
 		Categories:    categories,
-	}, nil
+	}, err
 }
 
 // renderTemplate renders an HTML template with car data
