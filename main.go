@@ -6,8 +6,6 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-	"os"
-	"path"
 	"strconv"
 	"sync"
 )
@@ -48,6 +46,10 @@ type CarSpecifications struct {
 	Drivetrain   string `json:"drivetrain"`
 }
 
+var templateIndex *template.Template
+
+// var compareIndex *template.Template
+
 func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
 	for _, manufacturer := range carData.Manufacturers {
 		if manufacturer.ID == manufacturerID {
@@ -73,6 +75,13 @@ func GetCategoryName(categoryID int, carData CarData) string {
 	return "Unknown Category"
 }
 
+func init() {
+	templateIndex, _ = template.New("form.html").Funcs(template.FuncMap{
+		"GetManufacturerData": GetManufacturerData,
+		"GetCategoryName":     GetCategoryName,
+	}).ParseFiles("templates/form.html")
+}
+
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		carData, err := getCarDataFromAPI()
@@ -95,10 +104,11 @@ func main() {
 			if count != 2 {
 				carData.Message = "You can only select 2 options"
 			} else {
-
+				//logic for compare comes here
+				return
 			}
 		}
-		renderTemplate(w, carData)
+		renderTemplate(w, carData, templateIndex)
 
 	})
 
@@ -179,28 +189,9 @@ func getCarDataFromAPI() (CarData, error) {
 	}, err
 }
 
-func renderTemplate(w http.ResponseWriter, data CarData) {
-	dir, err := os.Getwd()
-	if err != nil {
-		fmt.Println("Error getting current directory:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+func renderTemplate(w http.ResponseWriter, data CarData, tmpl *template.Template) {
 
-	templatePath := path.Join(dir, "templates", "form.html")
-
-	tmpl, err := template.New("form.html").Funcs(template.FuncMap{
-		"GetManufacturerData": GetManufacturerData,
-		"GetCategoryName":     GetCategoryName,
-	}).ParseFiles(templatePath)
-
-	if err != nil {
-		fmt.Println("Error parsing template:", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.Execute(w, struct {
+	err := tmpl.Execute(w, struct {
 		CarData CarData
 	}{
 		CarData: data,
