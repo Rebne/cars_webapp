@@ -17,6 +17,7 @@
 </head>
 <body>
     <h1>Car Data</h1>
+    <form method="POST" action="/compare"></form>
     <table>
         <tr>
             <th>Image</th>
@@ -26,8 +27,9 @@
             <th>Year</th>
         </tr>
         {{range .CarData.CarModels}}
-        <tr>
+        <tr class="container">
             <td>
+                <input type="checkbox" name="option" value="{{.ID}}" class="checkbox">
                 <details>
                     <summary>
                         <img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="150">
@@ -61,7 +63,11 @@
             <td>{{GetCategoryName .CategoryID $.CarData}}</td>
             <td>{{.Year}}</td>
         </tr>
+
         {{end}}
+    <input type="submit" value="Compare" id="compare-button">
     </table>
+</form>
+
 </body>
 </html>

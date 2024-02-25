@@ -12,14 +12,13 @@ import (
 	"sync"
 )
 
-// CarData contains the structure of the JSON data
 type CarData struct {
 	Manufacturers []Manufacturer `json:"manufacturers"`
 	Categories    []Category     `json:"categories"`
 	CarModels     []CarModel     `json:"carModels"`
+	Message       string
 }
 
-// Manufacturer represents a car manufacturer
 type Manufacturer struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
@@ -27,13 +26,11 @@ type Manufacturer struct {
 	FoundingYear int    `json:"foundingYear"`
 }
 
-// Category represents a car category
 type Category struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-// CarModel represents a car model
 type CarModel struct {
 	ID             int               `json:"id"`
 	Name           string            `json:"name"`
@@ -44,7 +41,6 @@ type CarModel struct {
 	Image          string            `json:"image"`
 }
 
-// CarSpecifications represents the specifications of a car model
 type CarSpecifications struct {
 	Engine       string `json:"engine"`
 	Horsepower   int    `json:"horsepower"`
@@ -52,7 +48,6 @@ type CarSpecifications struct {
 	Drivetrain   string `json:"drivetrain"`
 }
 
-// GetManufacturerData returns the specified details (e.g., "Country" or "FoundingYear") of the manufacturer.
 func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
 	for _, manufacturer := range carData.Manufacturers {
 		if manufacturer.ID == manufacturerID {
@@ -69,7 +64,6 @@ func GetManufacturerData(manufacturerID int, carData CarData, detailType string)
 	return ""
 }
 
-// GetCategoryName returns the name of the category based on the given ID
 func GetCategoryName(categoryID int, carData CarData) string {
 	for _, c := range carData.Categories {
 		if c.ID == categoryID {
@@ -80,9 +74,7 @@ func GetCategoryName(categoryID int, carData CarData) string {
 }
 
 func main() {
-	// Set up a simple web server
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Call the function to get car data from the API
 		carData, err := getCarDataFromAPI()
 		if err != nil {
 			fmt.Println("Error getting car data from API:", err)
@@ -90,14 +82,28 @@ func main() {
 			return
 		}
 
-		// Render HTML template with car data
+		if r.Method == "POST" {
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, "Failed to parse form", http.StatusBadRequest)
+			}
+			var count int
+
+			for range r.Form {
+				count++
+			}
+
+			if count != 2 {
+				carData.Message = "You can only select 2 options"
+			} else {
+
+			}
+		}
 		renderTemplate(w, carData)
+
 	})
 
-	// Serve static files (HTML, CSS, JavaScript) from the current directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// Start the web server on port 8080
 	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -131,7 +137,6 @@ func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-// getCarDataFromAPI reads the car data from the data.json file
 func getCarDataFromAPI() (CarData, error) {
 
 	modelsEndpoint := "http://localhost:3000/api/models"
@@ -164,11 +169,9 @@ func getCarDataFromAPI() (CarData, error) {
 			break
 		}
 	}
-
 	if err != nil {
 		return CarData{}, err
 	}
-
 	return CarData{
 		Manufacturers: manufacturers,
 		CarModels:     models,
@@ -176,9 +179,7 @@ func getCarDataFromAPI() (CarData, error) {
 	}, err
 }
 
-// renderTemplate renders an HTML template with car data
 func renderTemplate(w http.ResponseWriter, data CarData) {
-	// Get the current directory
 	dir, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Error getting current directory:", err)
@@ -186,10 +187,8 @@ func renderTemplate(w http.ResponseWriter, data CarData) {
 		return
 	}
 
-	// Construct the path to the HTML template file
 	templatePath := path.Join(dir, "templates", "form.html")
 
-	// Parse the HTML template
 	tmpl, err := template.New("form.html").Funcs(template.FuncMap{
 		"GetManufacturerData": GetManufacturerData,
 		"GetCategoryName":     GetCategoryName,
@@ -201,7 +200,6 @@ func renderTemplate(w http.ResponseWriter, data CarData) {
 		return
 	}
 
-	// Execute the template with car data
 	err = tmpl.Execute(w, struct {
 		CarData CarData
 	}{

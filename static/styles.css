@@ -26,3 +26,12 @@ th {
 details[open] .hidden-content {
     display: table-row;
 }
+
+.checkbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.container {
+    position: relative;
+}
