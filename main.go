@@ -50,36 +50,13 @@ var templateIndex *template.Template
 
 // var compareIndex *template.Template
 
-func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
-	for _, manufacturer := range carData.Manufacturers {
-		if manufacturer.ID == manufacturerID {
-			switch detailType {
-			case "Country":
-				return manufacturer.Country
-			case "Name":
-				return manufacturer.Name
-			case "FoundingYear":
-				return strconv.Itoa(manufacturer.FoundingYear)
-			}
-		}
-	}
-	return ""
-}
-
-func GetCategoryName(categoryID int, carData CarData) string {
-	for _, c := range carData.Categories {
-		if c.ID == categoryID {
-			return c.Name
-		}
-	}
-	return "Unknown Category"
-}
-
 func init() {
+
 	templateIndex, _ = template.New("form.html").Funcs(template.FuncMap{
 		"GetManufacturerData": GetManufacturerData,
 		"GetCategoryName":     GetCategoryName,
 	}).ParseFiles("templates/form.html")
+
 }
 
 func main() {
@@ -92,6 +69,7 @@ func main() {
 		}
 
 		if r.Method == "POST" {
+			fmt.Println("I received POST signal")
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Failed to parse form", http.StatusBadRequest)
 			}
@@ -200,4 +178,29 @@ func renderTemplate(w http.ResponseWriter, data CarData, tmpl *template.Template
 		fmt.Println("Error executing template:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+
+func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
+	for _, manufacturer := range carData.Manufacturers {
+		if manufacturer.ID == manufacturerID {
+			switch detailType {
+			case "Country":
+				return manufacturer.Country
+			case "Name":
+				return manufacturer.Name
+			case "FoundingYear":
+				return strconv.Itoa(manufacturer.FoundingYear)
+			}
+		}
+	}
+	return ""
+}
+
+func GetCategoryName(categoryID int, carData CarData) string {
+	for _, c := range carData.Categories {
+		if c.ID == categoryID {
+			return c.Name
+		}
+	}
+	return "Unknown Category"
 }

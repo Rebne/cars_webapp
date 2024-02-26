@@ -17,57 +17,56 @@
 </head>
 <body>
     <h1>Car Data</h1>
-    <form method="POST" action="/compare"></form>
-    <table>
-        <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Manufacturer</th>
-            <th>Category</th>
-            <th>Year</th>
-        </tr>
-        {{range .CarData.CarModels}}
-        <tr class="container">
-            <td>
-                <input type="checkbox" name="option" value="{{.ID}}" class="checkbox">
-                <details>
-                    <summary>
-                        <img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="150">
-                    </summary>
-                    <div class="hidden-content">
-                        <strong>Specifications:</strong>
-                        <ul>
-                            <li>Engine: {{.Specifications.Engine}}</li>
-                            <li>Horsepower: {{.Specifications.Horsepower}}</li>
-                            <li>Transmission: {{.Specifications.Transmission}}</li>
-                            <li>Drivetrain: {{.Specifications.Drivetrain}}</li>
-                        </ul>
-                    </div>
-                </details>
-            </td>
-            <td>{{.Name}}</td>
-            <td>
-                <details>
-                    <summary>
-                        {{GetManufacturerData .ManufacturerID $.CarData "Name"}}
-                    </summary>
-                    <div class="hidden-content">
-                        <strong>Info:</strong>
-                        <ul>
-                            <li>Country: {{GetManufacturerData .ManufacturerID $.CarData "Country"}}</li>
-                            <li>Founding year: {{GetManufacturerData .ManufacturerID $.CarData "FoundingYear"}}</li>
-                        </ul>
-                    </div>
-                </details>
-            </td>
-            <td>{{GetCategoryName .CategoryID $.CarData}}</td>
-            <td>{{.Year}}</td>
-        </tr>
-
-        {{end}}
-    <input type="submit" value="Compare" id="compare-button">
-    </table>
-</form>
-
+    <p>{{.CarData.Message}}</p>
+    <form method="POST" action="/">
+        <table>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Manufacturer</th>
+                <th>Category</th>
+                <th>Year</th>
+            </tr>
+            {{range .CarData.CarModels}}
+            <tr class="container">
+                <td>
+                    <input type="checkbox" name="option" value="{{.ID}}" class="checkbox">
+                    <details>
+                        <summary>
+                            <img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="150">
+                        </summary>
+                        <div class="hidden-content">
+                            <strong>Specifications:</strong>
+                            <ul>
+                                <li>Engine: {{.Specifications.Engine}}</li>
+                                <li>Horsepower: {{.Specifications.Horsepower}}</li>
+                                <li>Transmission: {{.Specifications.Transmission}}</li>
+                                <li>Drivetrain: {{.Specifications.Drivetrain}}</li>
+                            </ul>
+                        </div>
+                    </details>
+                </td>
+                <td>{{.Name}}</td>
+                <td>
+                    <details>
+                        <summary>
+                            {{GetManufacturerData .ManufacturerID $.CarData "Name"}}
+                        </summary>
+                        <div class="hidden-content">
+                            <strong>Info:</strong>
+                            <ul>
+                                <li>Country: {{GetManufacturerData .ManufacturerID $.CarData "Country"}}</li>
+                                <li>Founding year: {{GetManufacturerData .ManufacturerID $.CarData "FoundingYear"}}</li>
+                            </ul>
+                        </div>
+                    </details>
+                </td>
+                <td>{{GetCategoryName .CategoryID $.CarData}}</td>
+                <td>{{.Year}}</td>
+            </tr>
+            {{end}}
+        </table>
+        <button type="submit" id="submit-button">Compare</button>
+    </form>
 </body>
 </html>
