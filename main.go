@@ -48,7 +48,7 @@ type CarSpecifications struct {
 
 var templateIndex *template.Template
 
-// var compareIndex *template.Template
+var compareIndex *template.Template
 
 func init() {
 
@@ -57,9 +57,23 @@ func init() {
 		"GetCategoryName":     GetCategoryName,
 	}).ParseFiles("templates/form.html")
 
+	compareIndex, _ = template.New("compare.html").Funcs(template.FuncMap{
+		"GetManufacturerData": GetManufacturerData,
+		"GetCategoryName":     GetCategoryName,
+	}).ParseFiles("templates/compare.html")
 }
 
 func main() {
+	port := ":8080"
+	localHost := "http://localhost:8080"
+	http.HandleFunc("/compare", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			renderTemplate(w, CarData{}, compareIndex)
+		} else {
+			http.Error(w, "", http.StatusBadRequest)
+		}
+		return
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		carData, err := getCarDataFromAPI()
 		if err != nil {
@@ -69,6 +83,7 @@ func main() {
 		}
 
 		if r.Method == "POST" {
+			// for testing
 			fmt.Println("I received POST signal")
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Failed to parse form", http.StatusBadRequest)
@@ -82,7 +97,7 @@ func main() {
 			if count != 2 {
 				carData.Message = "You can only select 2 options"
 			} else {
-				//logic for compare comes here
+				http.Redirect(w, r, localHost+port+"/compare", http.StatusSeeOther)
 				return
 			}
 		}
@@ -92,8 +107,8 @@ func main() {
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	fmt.Println("Server is running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server is running on ", localHost)
+	http.ListenAndServe(port, nil)
 }
 
 func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {
