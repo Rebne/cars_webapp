@@ -65,14 +65,32 @@ func init() {
 
 func main() {
 	port := ":8080"
-	localHost := "http://localhost:8080"
+	localHost := "http://localhost"
+
 	http.HandleFunc("/compare", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
-			renderTemplate(w, CarData{}, compareIndex)
+
+			if err := r.ParseForm(); err != nil {
+				http.Error(w, "Failed to parse form", http.StatusBadRequest)
+			}
+
+			w.Header().Set("Content-type", "text/html")
+
+			var car1 CarModel
+			var car2 CarModel
+			wg := &sync.WaitGroup{}
+			errch := make(chan error)
+
+			wg.Add(2)
+
+			go getData("localhost:3000/api/models"+r.Form["option"][0], car1, errch, wg)
+			go getData("localhost:3000/api/models"+r.Form["option"][1], car2, errch, wg)
+
+			renderTemplate(w, CarData{CarModels: []CarModel{car1, car2}}, compareIndex)
+
 		} else {
 			http.Error(w, "", http.StatusBadRequest)
 		}
-		return
 	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		carData, err := getCarDataFromAPI()
@@ -82,6 +100,8 @@ func main() {
 			return
 		}
 
+		w.Header().Set("Content-type", "text/html")
+
 		if r.Method == "POST" {
 			// for testing
 			fmt.Println("I received POST signal")
@@ -90,17 +110,18 @@ func main() {
 			}
 			var count int
 
-			for range r.Form {
+			for range r.Form["option"] {
 				count++
 			}
-
+			fmt.Println(count)
 			if count != 2 {
-				carData.Message = "You can only select 2 options"
+				carData.Message = "You can have to select 2 options"
 			} else {
-				http.Redirect(w, r, localHost+port+"/compare", http.StatusSeeOther)
+				renderTemplate(w, CarData{}, compareIndex)
 				return
 			}
 		}
+
 		renderTemplate(w, carData, templateIndex)
 
 	})
@@ -189,6 +210,7 @@ func renderTemplate(w http.ResponseWriter, data CarData, tmpl *template.Template
 	}{
 		CarData: data,
 	})
+
 	if err != nil {
 		fmt.Println("Error executing template:", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
