@@ -68,5 +68,112 @@
         </table>
         <button type="submit" id="submit-button">Compare</button>
     </form>
+
+    <!-- HTML Form for Filtering -->
+
+    <form method="get" action="/filtered">
+        <label for="manufacturer">Manufacturer:</label>
+        <select name="manufacturer">
+            <option value="">All</option>
+            <option value="toyota">Toyota</option>
+            <option value="Honda">Honda</option>
+            <option value="BMW">BMW</option>
+            <option value="Audi">Audi</option>
+            <option value="Mercedez-Benz">Mercedez-Benz</option>
+            <option value="Ford">Ford</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Hyundai">Hyundai</option>
+            <option value="Lexus">Lexus</option>
+            <option value="Nissan">Nissan</option>
+        </select>
+
+        <label for="category">Category:</label>
+        <select name="category">
+            <option value="">All</option>
+            <option value="SUV">SUV</option>
+            <option value="Sedan">Sedan</option>
+            <option value="Coupe">Coupe</option>
+            <option value="Truck">Truck</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Convertible">Convertible</option>
+            <option value="Wagon">Wagon</option>
+            <option value="Electric">Electric</option>
+            <option value="Luxury">Luxury</option>
+            <option value="Sports">Sports</option>
+        </select>
+
+        <label for="drivetrain">Drivetrain:</label>
+        <select name="drivetrain">
+            <option value="">All</option>
+            <option value="front-wheel drive">Front-Wheel Drive</option>
+            <option value="rear-wheel drive">Rear-Wheel Drive</option>
+            <option value="all-wheel drive">All-Wheel Drive</option>
+        </select>
+
+        <label for="transmission">Transmission:</label>
+        <select name="transmission">
+            <option value="">All</option>
+            <option value="manual">Manual</option>
+            <option value="automatic">Automatic</option>
+            <option value="cvt">CVT</option>
+        </select>
+
+        <label for="horsepower">Horsepower:</label>
+        <select name="horsepower">
+            <option value="">All</option>
+            <option value="0-150">0-150 HP</option>
+            <option value="151-300">151-300 HP</option>
+            <option value="301-450">301-450 HP</option>
+        </select>
+
+        <button type="submit">Apply Filters</button>
+</form>
+
+    <table>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Manufacturer</th>
+            <th>Category</th>
+            <th>Year</th>
+        </tr>
+        {{range .CarData.CarModels}}
+        <tr>
+            <td>
+                <details>
+                    <summary>
+                        <img src="http://localhost:3000/api/images/{{.Image}}" alt="{{.Name}} Image" width="150">
+                    </summary>
+                    <div class="hidden-content">
+                        <strong>Specifications:</strong>
+                        <ul>
+                            <li>Engine: {{.Specifications.Engine}}</li>
+                            <li>Horsepower: {{.Specifications.Horsepower}}</li>
+                            <li>Transmission: {{.Specifications.Transmission}}</li>
+                            <li>Drivetrain: {{.Specifications.Drivetrain}}</li>
+                        </ul>
+                    </div>
+                </details>
+            </td>
+            <td>{{.Name}}</td>
+            <td>
+                <details>
+                    <summary>
+                        {{GetManufacturerData .ManufacturerID $.CarData "Name"}}
+                    </summary>
+                    <div class="hidden-content">
+                        <strong>Info:</strong>
+                        <ul>
+                            <li>Country: {{GetManufacturerData .ManufacturerID $.CarData "Country"}}</li>
+                            <li>Founding year: {{GetManufacturerData .ManufacturerID $.CarData "FoundingYear"}}</li>
+                        </ul>
+                    </div>
+                </details>
+            </td>
+            <td>{{GetCategoryName .CategoryID $.CarData}}</td>
+            <td>{{.Year}}</td>
+        </tr>
+        {{end}}
+    </table>
 </body>
 </html>
