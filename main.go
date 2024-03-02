@@ -127,10 +127,6 @@ func main() {
 
 	})
 
-		// Render HTML template with car data
-		renderTemplate(w, carData)
-	})
-
 	// Handle the "/filtered" route
 	http.HandleFunc("/filtered", filteredHandler)
 
@@ -226,31 +222,6 @@ func renderTemplate(w http.ResponseWriter, data CarData, tmpl *template.Template
 	}
 }
 
-func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
-	for _, manufacturer := range carData.Manufacturers {
-		if manufacturer.ID == manufacturerID {
-			switch detailType {
-			case "Country":
-				return manufacturer.Country
-			case "Name":
-				return manufacturer.Name
-			case "FoundingYear":
-				return strconv.Itoa(manufacturer.FoundingYear)
-			}
-		}
-	}
-	return ""
-}
-
-func GetCategoryName(categoryID int, carData CarData) string {
-	for _, c := range carData.Categories {
-		if c.ID == categoryID {
-			return c.Name
-		}
-	}
-	return "Unknown Category"
-}
-
 func filteredHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the form data from the request
 	err := r.ParseForm()
@@ -284,7 +255,7 @@ func filteredHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render HTML template with filtered car data
-	renderTemplate(w, filteredCarData)
+	renderTemplate(w, filteredCarData, nil)
 }
 
 func getFilteredCarDataFromAPI(manufacturer, category, drivetrain, transmission, horsepower string, carData CarData) (CarData, error) {
@@ -380,4 +351,29 @@ func categorizeTransmission(originalTransmission string) string {
 	}
 	// Default to the original transmission value if not matched
 	return originalTransmission
+}
+
+func GetManufacturerData(manufacturerID int, carData CarData, detailType string) string {
+	for _, manufacturer := range carData.Manufacturers {
+		if manufacturer.ID == manufacturerID {
+			switch detailType {
+			case "Country":
+				return manufacturer.Country
+			case "Name":
+				return manufacturer.Name
+			case "FoundingYear":
+				return strconv.Itoa(manufacturer.FoundingYear)
+			}
+		}
+	}
+	return ""
+}
+
+func GetCategoryName(categoryID int, carData CarData) string {
+	for _, c := range carData.Categories {
+		if c.ID == categoryID {
+			return c.Name
+		}
+	}
+	return "Unknown Category"
 }
