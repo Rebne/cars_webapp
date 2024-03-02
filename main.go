@@ -104,8 +104,6 @@ func main() {
 		w.Header().Set("Content-type", "text/html")
 
 		if r.Method == "POST" {
-			// for testing
-			fmt.Println("I received POST signal")
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Failed to parse form", http.StatusBadRequest)
 			}
@@ -221,7 +219,6 @@ func renderTemplate(w http.ResponseWriter, data CarData, tmpl *template.Template
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
-
 func filteredHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the form data from the request
 	err := r.ParseForm()
@@ -255,7 +252,7 @@ func filteredHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Render HTML template with filtered car data
-	renderTemplate(w, filteredCarData, nil)
+	renderTemplate(w, filteredCarData, templateIndex)
 }
 
 func getFilteredCarDataFromAPI(manufacturer, category, drivetrain, transmission, horsepower string, carData CarData) (CarData, error) {
@@ -376,4 +373,5 @@ func GetCategoryName(categoryID int, carData CarData) string {
 		}
 	}
 	return "Unknown Category"
+
 }
