@@ -331,16 +331,13 @@ func getFilteredCarDataFromAPI(manufacturer, category, drivetrain, transmission,
 		// Check if the horsepower filter is set and match
 		if minHP != nil && maxHP != nil {
 			if carModel.Specifications.Horsepower < *minHP || carModel.Specifications.Horsepower > *maxHP {
-				// If horsepower is not within the specified range, skip the model
 				continue
 			}
 		}
 
-		// If all filters pass, add the car model to the filtered data
 		filteredCarData.CarModels = append(filteredCarData.CarModels, carModel)
 	}
 
-	// Copy other data like Manufacturers and Categories
 	filteredCarData.Manufacturers = carData.Manufacturers
 	filteredCarData.Categories = carData.Categories
 
