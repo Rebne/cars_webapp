@@ -16,6 +16,8 @@ type CarData struct {
 	Categories    []Category     `json:"categories"`
 	CarModels     []CarModel     `json:"carModels"`
 	Message       string
+	IsPopup       bool
+	CompareModels []CarModel
 }
 
 type Manufacturer struct {
@@ -65,7 +67,7 @@ func init() {
 }
 
 func main() {
-	port := ":8080"
+	port := ":8081"
 	localHost := "http://localhost"
 
 	http.HandleFunc("/compare", func(w http.ResponseWriter, r *http.Request) {
@@ -103,6 +105,8 @@ func main() {
 
 		w.Header().Set("Content-type", "text/html")
 
+		carData.IsPopup = false
+
 		if r.Method == "POST" {
 			if err := r.ParseForm(); err != nil {
 				http.Error(w, "Failed to parse form", http.StatusBadRequest)
@@ -112,11 +116,14 @@ func main() {
 			for range r.Form["option"] {
 				count++
 			}
-			fmt.Println(count)
 			if count != 2 {
 				carData.Message = "You can have to select 2 options"
 			} else {
-				renderTemplate(w, CarData{}, compareIndex)
+				carData.IsPopup = true
+				for _, carID := range r.Form["option"] {
+					carData.CompareModels = append(carData.CompareModels, getCarModel(carID, &carData))
+				}
+				renderTemplate(w, carData, templateIndex)
 				return
 			}
 		}
@@ -131,8 +138,18 @@ func main() {
 	// Serve static files (HTML, CSS, JavaScript) from the current directory
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	fmt.Println("Server is running on ", localHost)
+	fmt.Println("Server is running on ", localHost+port)
 	http.ListenAndServe(port, nil)
+}
+
+func getCarModel(id string, carData *CarData) CarModel {
+	for _, car := range carData.CarModels {
+		target, _ := strconv.Atoi(id)
+		if car.ID == target {
+			return car
+		}
+	}
+	return CarModel{}
 }
 
 func getData(s string, ptr interface{}, ch chan<- error, wg *sync.WaitGroup) {

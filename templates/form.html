@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <title>Car Data</title>
 </head>
-<body>
+<body class="{{if .CarData.IsPopup}}popup-bg{{else}}{{end}}">
     <h1>Car Data</h1>
 
     <!-- HTML Form for Filtering -->
@@ -70,6 +70,32 @@
 </form>
 
 <p>{{.CarData.Message}}</p>
+{{if .CarData.IsPopup}}
+<style>
+    .popup-bg{
+        opacity: 0.5;
+    }
+
+    #popup-table {
+        opacity: 1;
+    }
+</style>
+<div>
+    <table id="popup-table">
+        {{$car1 := (index .CarData.CompareModels 0)}}
+        {{$car2 := (index .CarData.CompareModels 1)}}
+        <tr>
+            <td>
+                <img src="http://localhost:3000/api/images/{{$car1.Image}}" alt="{{$car1.Name}}">
+            </td>
+            <td>
+                <img src="http://localhost:3000/api/images/{{$car2.Image}}" alt="{{$car2.Name}}">
+            </td>
+        </tr>
+    </table>
+</div>
+{{end}}
+
 <form method="POST" action="/">
     <table>
         <tr>

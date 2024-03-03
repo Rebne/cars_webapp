@@ -35,3 +35,7 @@ details[open] .hidden-content {
 .container {
     position: relative;
 }
+
+.popup-table {
+    opacity: 1;
+}
