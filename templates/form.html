@@ -69,32 +69,72 @@
         <button type="submit">Apply Filters</button>
 </form>
 
-<p>{{.CarData.Message}}</p>
+<!-- Compare popup window -->
+<p class="warning-message">{{.CarData.Message}}</p>
 {{if .CarData.IsPopup}}
-<style>
-    .popup-bg{
-        opacity: 0.5;
-    }
-
-    #popup-table {
-        opacity: 1;
-    }
-</style>
-<div>
-    <table id="popup-table">
+<div class="popup">
+    <form method="GET" action="/">
+        <button type="submit" id="close-button">Close</button>
+    </form>
+    <table class="popup-table">
         {{$car1 := (index .CarData.CompareModels 0)}}
         {{$car2 := (index .CarData.CompareModels 1)}}
         <tr>
+            <td class="compare-name">{{$car1.Name}}</td>
+            <td class="compare-name">{{$car2.Name}}</td>
+        </tr>
+        <tr>
             <td>
-                <img src="http://localhost:3000/api/images/{{$car1.Image}}" alt="{{$car1.Name}}">
+                <img src="http://localhost:3000/api/images/{{$car1.Image}}" alt="{{$car1.Name}}" width="250">
             </td>
             <td>
-                <img src="http://localhost:3000/api/images/{{$car2.Image}}" alt="{{$car2.Name}}">
+                <img src="http://localhost:3000/api/images/{{$car2.Image}}" alt="{{$car2.Name}}" width="250">
             </td>
         </tr>
+        <tr>
+            <td>{{$car1.Year}}</td>
+            <td>{{$car2.Year}}</td>
+        </tr>
+        <tr>
+            <th>Engine</th>
+            <td>
+                {{$car1.Specifications.Engine}}
+            </td>
+            <td>
+                {{$car2.Specifications.Engine}}
+            </td>
+        </tr>
+        <tr>
+            <td class="{{if CompareHorsepower $car1.Specifications.Horsepower $car2.Specifications.Horsepower}}
+            better{{end}}">
+                {{$car1.Specifications.Horsepower}}
+            </td>
+            <td class="{{if CompareHorsepower $car2.Specifications.Horsepower $car1.Specifications.Horsepower}}
+            better{{end}}">
+                {{$car2.Specifications.Horsepower}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{$car1.Specifications.Transmission}}
+            </td>
+            <td>
+                {{$car1.Specifications.Transmission}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{$car1.Specifications.Drivetrain}}
+            </td>
+            <td>
+                {{$car1.Specifications.Drivetrain}}
+            </td>
+        </tr>
+        
     </table>
 </div>
 {{end}}
+
 
 <form method="POST" action="/">
     <table>

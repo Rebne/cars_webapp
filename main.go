@@ -51,50 +51,20 @@ type CarSpecifications struct {
 
 var templateIndex *template.Template
 
-var compareIndex *template.Template
-
 func init() {
 
 	templateIndex, _ = template.New("form.html").Funcs(template.FuncMap{
 		"GetManufacturerData": GetManufacturerData,
 		"GetCategoryName":     GetCategoryName,
+		"CompareHorsepower":   CompareHorsepower,
 	}).ParseFiles("templates/form.html")
 
-	compareIndex, _ = template.New("compare.html").Funcs(template.FuncMap{
-		"GetManufacturerData": GetManufacturerData,
-		"GetCategoryName":     GetCategoryName,
-	}).ParseFiles("templates/compare.html")
 }
 
 func main() {
 	port := ":8081"
 	localHost := "http://localhost"
 
-	http.HandleFunc("/compare", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "POST" {
-
-			if err := r.ParseForm(); err != nil {
-				http.Error(w, "Failed to parse form", http.StatusBadRequest)
-			}
-
-			w.Header().Set("Content-type", "text/html")
-
-			var car1 CarModel
-			var car2 CarModel
-			wg := &sync.WaitGroup{}
-			errch := make(chan error)
-
-			wg.Add(2)
-
-			go getData("localhost:3000/api/models"+r.Form["option"][0], car1, errch, wg)
-			go getData("localhost:3000/api/models"+r.Form["option"][1], car2, errch, wg)
-
-			renderTemplate(w, CarData{CarModels: []CarModel{car1, car2}}, compareIndex)
-
-		} else {
-			http.Error(w, "", http.StatusBadRequest)
-		}
-	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		carData, err := getCarDataFromAPI()
 		if err != nil {
@@ -117,7 +87,7 @@ func main() {
 				count++
 			}
 			if count != 2 {
-				carData.Message = "You can have to select 2 options"
+				carData.Message = "You have to select 2 options"
 			} else {
 				carData.IsPopup = true
 				for _, carID := range r.Form["option"] {
@@ -142,6 +112,13 @@ func main() {
 	http.ListenAndServe(port, nil)
 }
 
+func CompareHorsepower(a int, b int) bool {
+	if a == b {
+		return false
+	}
+
+	return a > b
+}
 func getCarModel(id string, carData *CarData) CarModel {
 	for _, car := range carData.CarModels {
 		target, _ := strconv.Atoi(id)
