@@ -53,6 +53,8 @@
         </select>
 
         <button type="submit">Apply Filters</button>
+        <button form="compare-form" type="submit" id="submit-button">Compare</button>
+
 </form>
 
 <!-- Compare popup window -->
@@ -125,7 +127,7 @@
 {{end}}
 
 
-<form method="POST" action="/">
+<form id="compare-form" method="POST" action="/">
     <table>
         <tr>
             <th>Image</th>
@@ -173,7 +175,6 @@
         </tr>
         {{end}}
     </table>
-    <button type="submit" id="submit-button">Compare</button>
 </form>
 </body>
 </html>
