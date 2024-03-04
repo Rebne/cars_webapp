@@ -61,3 +61,7 @@ details[open] .hidden-content {
 .better {
     background-color: rgb(66, 207, 66);
 }
+
+.compare-solo {
+    text-align: center;
+}

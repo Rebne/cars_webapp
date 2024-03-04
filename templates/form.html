@@ -66,53 +66,56 @@
         {{$car1 := (index .CarData.CompareModels 0)}}
         {{$car2 := (index .CarData.CompareModels 1)}}
         <tr>
-            <td class="compare-name">{{$car1.Name}}</td>
-            <td class="compare-name">{{$car2.Name}}</td>
+            <td colspan="3" class="compare-solo">{{$car1.Name}}</td>
+            <td colspan="3" class="compare-solo">{{$car2.Name}}</td>
         </tr>
         <tr>
-            <td>
+            <td colspan="3">
                 <img src="http://localhost:3000/api/images/{{$car1.Image}}" alt="{{$car1.Name}}" width="250">
             </td>
-            <td>
+            <td colspan="3">
                 <img src="http://localhost:3000/api/images/{{$car2.Image}}" alt="{{$car2.Name}}" width="250">
             </td>
         </tr>
         <tr>
-            <td>{{$car1.Year}}</td>
-            <td>{{$car2.Year}}</td>
+            <td colspan="3" class="compare-solo">{{$car1.Year}}</td>
+            <td colspan="3" class="compare-solo">{{$car2.Year}}</td>
         </tr>
         <tr>
-            <th>Engine</th>
-            <td>
+            <th colspan="2">Engine</th>
+            <td colspan="2">
                 {{$car1.Specifications.Engine}}
             </td>
-            <td>
+            <td colspan="2">
                 {{$car2.Specifications.Engine}}
             </td>
         </tr>
         <tr>
-            <td class="{{if CompareHorsepower $car1.Specifications.Horsepower $car2.Specifications.Horsepower}}
+            <th colspan="2">Horsepower</th>
+            <td colspan="2" class="{{if CompareHorsepower $car1.Specifications.Horsepower $car2.Specifications.Horsepower}}
             better{{end}}">
                 {{$car1.Specifications.Horsepower}}
             </td>
-            <td class="{{if CompareHorsepower $car2.Specifications.Horsepower $car1.Specifications.Horsepower}}
+            <td colspan="2" class="{{if CompareHorsepower $car2.Specifications.Horsepower $car1.Specifications.Horsepower}}
             better{{end}}">
                 {{$car2.Specifications.Horsepower}}
             </td>
         </tr>
         <tr>
-            <td>
+            <th colspan="2">Transmission</td>
+            <td colspan="2">
                 {{$car1.Specifications.Transmission}}
             </td>
-            <td>
+            <td colspan="2">
                 {{$car1.Specifications.Transmission}}
             </td>
         </tr>
         <tr>
-            <td>
+            <th colspan="2">Drivetrain</td>
+            <td colspan="2">
                 {{$car1.Specifications.Drivetrain}}
             </td>
-            <td>
+            <td colspan="2">
                 {{$car1.Specifications.Drivetrain}}
             </td>
         </tr>
