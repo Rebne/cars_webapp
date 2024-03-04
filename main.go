@@ -62,7 +62,7 @@ func init() {
 }
 
 func main() {
-	port := ":8081"
+	port := ":8080"
 	localHost := "http://localhost"
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

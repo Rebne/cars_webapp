@@ -15,31 +15,17 @@
         <label for="manufacturer">Manufacturer:</label>
         <select name="manufacturer">
             <option value="">All</option>
-            <option value="Toyota">Toyota</option>
-            <option value="Honda">Honda</option>
-            <option value="BMW">BMW</option>
-            <option value="Audi">Audi</option>
-            <option value="Mercedes-Benz">Mercedes-Benz</option>
-            <option value="Ford">Ford</option>
-            <option value="Chevrolet">Chevrolet</option>
-            <option value="Hyundai">Hyundai</option>
-            <option value="Lexus">Lexus</option>
-            <option value="Nissan">Nissan</option>
+            {{range .CarData.Manufacturers}}
+            <option value="{{.Name}}">{{.Name}}</option>
+            {{end}}
         </select>
 
         <label for="category">Category:</label>
         <select name="category">
             <option value="">All</option>
-            <option value="SUV">SUV</option>
-            <option value="Sedan">Sedan</option>
-            <option value="Coupe">Coupe</option>
-            <option value="Truck">Truck</option>
-            <option value="Hatchback">Hatchback</option>
-            <option value="Convertible">Convertible</option>
-            <option value="Wagon">Wagon</option>
-            <option value="Electric">Electric</option>
-            <option value="Luxury">Luxury</option>
-            <option value="Sports">Sports</option>
+            {{range .CarData.Categories}}
+            <option value="{{.Name}}">{{.Name}}</option>
+            {{end}}
         </select>
 
         <label for="drivetrain">Drivetrain:</label>

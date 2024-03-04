@@ -1,3 +1,3 @@
-module cars.go
+module car
 
-go 1.22
+go 1.21.4
