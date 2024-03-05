@@ -71,7 +71,7 @@ func init() {
 
 	// Initalizing user prefrences
 
-	// Clearing cache if flag
+	// Clearing cache if flag -clear
 	if *clearCache {
 		file, err := os.Create("pref.csv")
 		if err != nil {
@@ -149,7 +149,6 @@ func saveCache(cache map[string]float32) {
 
 	_, err = file.WriteString(result)
 	if err != nil {
-		fmt.Println("I WAS HERE!")
 		log.Fatal(err)
 	}
 }
