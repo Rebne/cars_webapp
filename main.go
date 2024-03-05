@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"io"
@@ -58,6 +59,10 @@ var preferenceCache map[string]float32
 
 func init() {
 
+	clearCache := flag.Bool("clear", false, "Clears the pref.csv file of all the files")
+
+	flag.Parse()
+
 	templateIndex, _ = template.New("form.html").Funcs(template.FuncMap{
 		"GetManufacturerData": GetManufacturerData,
 		"GetCategoryName":     GetCategoryName,
@@ -65,6 +70,17 @@ func init() {
 	}).ParseFiles("templates/form.html")
 
 	// Initalizing user prefrences
+
+	// Clearing cache if flag
+	if *clearCache {
+		file, err := os.Create("pref.csv")
+		if err != nil {
+			log.Fatal(err)
+		}
+		file.Close()
+		return
+	}
+
 	preferenceCache = make(map[string]float32)
 	file, err := os.Open("pref.csv")
 	if err != nil {
@@ -98,6 +114,9 @@ func incrementCache(key string, cache map[string]float32, val float32) {
 }
 
 func sortModelsInCarData(cardata *CarData, cache map[string]float32) {
+	if len(cache) == 0 {
+		return
+	}
 	sort.Slice(cardata.CarModels, func(i, j int) bool {
 		tmp1 := cardata.CarModels[i].Name
 		tmp2 := cardata.CarModels[j].Name
