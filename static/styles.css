@@ -1,6 +1,7 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
     margin: 20px;
+    font-style: normal
 }
 
 table {
@@ -18,6 +19,32 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+form {
+    background-color: #ffffff; 
+    padding: 20px; 
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+  }
+
+button {
+        border-radius: 2px;
+        font-size: 15px;
+        font-family: Arial,Helvetica,Tahoma,sans-serif;
+        cursor: pointer;
+        padding: 0 0.5em;
+        border: 1px solid #ccc;
+        border-color: transparent;
+        background-color: #8eb51e;
+        color: #fff;
+        outline: none;
+        min-height: 1.2em;
+        line-height: calc(2em - 2px);
+        height: 2em;
+        margin: 0
+        
+    }
+
 
 .hidden-content {
     display: none;

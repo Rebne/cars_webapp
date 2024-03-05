@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
-    <title>Car Data</title>
+    <title>auto25</title>
 </head>
 <body>
-    <h1>Car Data</h1>
+    <div style="display: flex; align-items: center;">
+        <h1 style="color:#0066cc">auto</h1>
+        <h1 style="color:#fa9300;">25</h1>
+        <h1 style="color:#0066cc;">.ee</h1>
+    </div>
 
     <!-- HTML Form for Filtering -->
 
-    <form method="get" action="/filtered">
+    <form method="get" action="/filtered" id="form">
         <label for="manufacturer">Manufacturer:</label>
         <select name="manufacturer">
             <option value="">All</option>
@@ -52,8 +56,8 @@
             <option value="301-450">301-450 HP</option>
         </select>
 
-        <button type="submit">Apply Filters</button>
-        <button form="compare-form" type="submit" id="submit-button">Compare</button>
+        <button type="submit">apply filters</button>
+        <button form="compare-form" type="submit" id="submit-button">compare</button>
 
 </form>
 
