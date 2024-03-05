@@ -65,6 +65,7 @@ func init() {
 	}).ParseFiles("templates/form.html")
 
 	// Initalizing user prefrences
+	preferenceCache = make(map[string]float32)
 	file, err := os.Open("pref.csv")
 	if err != nil {
 		log.Fatal("Missing pref.csv from root file")
@@ -109,9 +110,13 @@ func sortModelsInCarData(cardata *CarData, cache map[string]float32) {
 }
 
 func saveCache(cache map[string]float32) {
+	if len(cache) == 0 {
+		return
+	}
+
 	result := ""
 
-	file, err := os.Open("pref.csv")
+	file, err := os.Create("pref.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -125,6 +130,7 @@ func saveCache(cache map[string]float32) {
 
 	_, err = file.WriteString(result)
 	if err != nil {
+		fmt.Println("I WAS HERE!")
 		log.Fatal(err)
 	}
 }
