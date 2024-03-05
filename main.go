@@ -77,7 +77,7 @@ func init() {
 	for scanner.Scan() {
 		line := scanner.Text()
 		var i int
-		for line[i] != ',' || i < len(line) {
+		for line[i] != ',' && i < len(line) {
 			i++
 		}
 		model := line[:i]
