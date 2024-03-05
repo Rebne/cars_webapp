@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
+	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -50,6 +54,7 @@ type CarSpecifications struct {
 }
 
 var templateIndex *template.Template
+var preferenceCache map[string]float32
 
 func init() {
 
@@ -59,9 +64,72 @@ func init() {
 		"CompareHorsepower":   CompareHorsepower,
 	}).ParseFiles("templates/form.html")
 
+	// Initalizing user prefrences
+	file, err := os.Open("pref.csv")
+	if err != nil {
+		log.Fatal("Missing pref.csv from root file")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		var i int
+		for line[i] != ',' || i < len(line) {
+			i++
+		}
+		model := line[:i]
+		i++
+		tmp, _ := strconv.Atoi(line[i:])
+		visits := float32(tmp)
+
+		preferenceCache[model] = visits
+	}
 }
 
+func incrementCache(key string, cache map[string]float32, val float32) {
+	if _, ok := cache[key]; !ok {
+		cache[key] = val
+	} else {
+		cache[key] += val
+	}
+}
+
+func sortModelsInCarData(cardata *CarData, cache map[string]float32) {
+	sort.Slice(cardata.CarModels, func(i, j int) bool {
+		tmp1 := cardata.CarModels[i].Name
+		tmp2 := cardata.CarModels[j].Name
+
+		incrementCache(tmp1, cache, 0)
+		incrementCache(tmp2, cache, 0)
+
+		return cache[tmp1] > cache[tmp2]
+	})
+}
+
+func saveCache(cache map[string]float32) {
+	result := ""
+
+	file, err := os.Open("pref.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer file.Close()
+
+	for key, val := range cache {
+		result += key + "," + strconv.FormatFloat(float64(val), 'f', -1, 32) + "\n"
+	}
+	result = result[:len(result)-1]
+
+	_, err = file.WriteString(result)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 func main() {
+
 	port := ":8080"
 	localHost := "http://localhost"
 
@@ -91,13 +159,15 @@ func main() {
 			} else {
 				carData.IsPopup = true
 				for _, carID := range r.Form["option"] {
-					carData.CompareModels = append(carData.CompareModels, getCarModel(carID, &carData))
+					model := getCarModel(carID, &carData)
+					carData.CompareModels = append(carData.CompareModels, model)
+					// incrementring cache after user interacting with model
+					incrementCache(model.Name, preferenceCache, 1.0)
 				}
-				renderTemplate(w, carData, templateIndex)
-				return
 			}
 		}
-
+		saveCache(preferenceCache)
+		sortModelsInCarData(&carData, preferenceCache)
 		renderTemplate(w, carData, templateIndex)
 
 	})
@@ -245,6 +315,8 @@ func filteredHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	saveCache(preferenceCache)
+	sortModelsInCarData(&filteredCarData, preferenceCache)
 	// Render HTML template with filtered car data
 	renderTemplate(w, filteredCarData, templateIndex)
 }
@@ -298,6 +370,9 @@ func getFilteredCarDataFromAPI(manufacturer, category, drivetrain, transmission,
 		}
 
 		filteredCarData.CarModels = append(filteredCarData.CarModels, carModel)
+
+		// Incrementing user preferenceCache by 0.5
+		incrementCache(carModel.Name, preferenceCache, 0.5)
 	}
 
 	filteredCarData.Manufacturers = carData.Manufacturers
