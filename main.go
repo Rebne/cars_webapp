@@ -199,9 +199,6 @@ func main() {
 	// Handle the "/filtered" route
 	http.HandleFunc("/filtered", filteredHandler)
 
-	// Serve static files (HTML, CSS, JavaScript) from the current directory
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-
 	fmt.Println("Server is running on ", localHost+port)
 	http.ListenAndServe(port, nil)
 }

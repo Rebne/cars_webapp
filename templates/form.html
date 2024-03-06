@@ -3,10 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <title>auto25</title>
+<!-- Style written as inline because some rules did not work unless done this way -->
+    <style>
+body {
+font-family: Helvetica, sans-serif;
+margin: 20px;
+font-style: normal
+}
+
+summary::marker {
+color: #0066cc;
+font-size: 1.3em;
+
+}
+
+form {
+border: none;
+}
+input {
+border: none;
+}
+th {
+background: #fcba3c;
+background: linear-gradient(to bottom, #fcba3c 0%, #fb9807 100%);
+border-radius: .714rem .714rem 0 0;
+border-bottom-color: #fb9807;
+border: 1px solid #ffffff;
+height: calc(2*0.857rem + 2*0.5rem);
+justify-content: center;
+text-align: center;
+overflow: hidden;
+padding: 0 1em;
+margin-right: 1px;
+line-height: 1;
+color: #fff;
+font-weight: 500;
+
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+}
+
+td {
+border: 1px solid #dddddd;
+text-align: left;
+padding: 8px;
+}
+
+th {
+background-color: #f2f2f2;
+}
+
+form {
+background-color: #ffffff; 
+padding: 20px; 
+/* border-radius: 10px; */
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+
+button {
+border-radius: 2px;
+font-size: 15px;
+cursor: pointer;
+padding: 0 0.5em;
+border: 1px solid #ccc;
+border-color: transparent;
+background-color: #8eb51e;
+color: #fff;
+outline: none;
+min-height: 1.2em;
+line-height: calc(2em - 2px);
+height: 2em;
+margin: 0
+
+}
+
+
+.hidden-content {
+display: none;
+}
+
+details[open] .hidden-content {
+display: table-row;
+}
+
+.checkbox {
+position: absolute;
+top: 0;
+left: 0;
+}
+.container {
+position: relative;
+}
+
+.popup-table {
+opacity: 1;
+}
+
+.popup {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background-color: white;
+padding: 20px;
+border-radius: 5px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+z-index: 9999;
+}
+
+#close-button {
+position: absolute;
+top: 0;
+right: 0;
+}
+
+.better {
+background-color: rgb(66, 207, 66);
+}
+
+.compare-solo {
+text-align: center;
+}
+    </style>
 </head>
 <body>
+    <!-- Logo text -->
     <div style="display: flex; align-items: center;">
         <h1 style="color:#0066cc">auto</h1>
         <h1 style="color:#fa9300;">25</h1>
@@ -130,8 +256,8 @@
 </div>
 {{end}}
 
-
-<form id="compare-form" method="POST" action="/">
+<!-- The main display/form of cars -->
+<form class="form-container" id="compare-form" method="POST" action="/">
     <table>
         <tr>
             <th>Image</th>
