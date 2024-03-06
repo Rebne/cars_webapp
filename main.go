@@ -69,8 +69,6 @@ func init() {
 		"CompareHorsepower":   CompareHorsepower,
 	}).ParseFiles("templates/form.html")
 
-	// Initalizing user prefrences
-
 	// Clearing cache if flag -clear
 	if *clearCache {
 		file, err := os.Create("pref.csv")
@@ -81,6 +79,7 @@ func init() {
 		return
 	}
 
+	// Initalizing user prefrences
 	preferenceCache = make(map[string]float32)
 	file, err := os.Open("pref.csv")
 	if err != nil {
