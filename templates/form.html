@@ -129,6 +129,11 @@ background-color: rgb(66, 207, 66);
 .compare-solo {
 text-align: center;
 }
+
+.blue-stripe {
+background-color: #0066cc;
+height: 1.4rem;
+}
     </style>
 </head>
 <body>
@@ -265,6 +270,9 @@ text-align: center;
             <th>Manufacturer</th>
             <th>Category</th>
             <th>Year</th>
+        </tr>
+        <tr class="blue-stripe">
+            <td colspan="5"></td>
         </tr>
         {{range .CarData.CarModels}}
         <tr class="container">
