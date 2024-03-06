@@ -22,5 +22,9 @@ To access the site, you must first run the API. You can do so by:
 
 The website was built with Go running the server, calling the API and rendering the HTML and CSS parts, that make up the website. We have not used a single line of JavaScript in our code, which makes it even more impressive! (khm-khm, max points please!)
 
+## Bonus features
 
-
+The website has a function of logging user activity with comparing and filtering car models and implements a point system that sorts the displayed cars in descending order by their popularity/points. The points are backed-up to .csv file that is read each time the server launches. To clear this cache/history start the program with the -clear flag.   
+For example:   
+  
+```go run . -clear```
