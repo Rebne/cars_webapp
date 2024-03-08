@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>auto25</title>
+
 <!-- Style written as inline because some rules did not work unless done this way -->
     <style>
 body {
@@ -24,7 +25,7 @@ border: none;
 input {
 border: none;
 }
-th {
+.form-container th {
 background: #fcba3c;
 background: linear-gradient(to bottom, #fcba3c 0%, #fb9807 100%);
 border-radius: .714rem .714rem 0 0;
@@ -100,10 +101,6 @@ left: 0;
 position: relative;
 }
 
-.popup-table {
-opacity: 1;
-}
-
 .popup {
 position: fixed;
 top: 50%;
@@ -123,7 +120,7 @@ right: 0;
 }
 
 .better {
-background-color: rgb(66, 207, 66);
+background-color: #8eb51e;
 }
 
 .compare-solo {
@@ -134,6 +131,11 @@ text-align: center;
 background-color: #0066cc;
 height: 1.4rem;
 }
+
+#close-button {
+    background-color: #c22048;
+}
+
     </style>
 </head>
 <body>
@@ -197,7 +199,7 @@ height: 1.4rem;
 {{if .CarData.IsPopup}}
 <div class="popup">
     <form method="GET" action="/">
-        <button type="submit" id="close-button">Close</button>
+        <button type="submit" id="close-button">X</button>
     </form>
     <table class="popup-table">
         {{$car1 := (index .CarData.CompareModels 0)}}
