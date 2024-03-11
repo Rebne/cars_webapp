@@ -178,7 +178,7 @@ func main() {
 				count++
 			}
 			if count != 2 {
-				carData.Message = "You have to select 2 options"
+				carData.Message = "You must check 2 checkboxes"
 			} else {
 				carData.IsPopup = true
 				for _, carID := range r.Form["option"] {
@@ -258,7 +258,7 @@ func getCarDataFromAPI() (CarData, error) {
 	var models []CarModel
 	var categories []Category
 	wg := &sync.WaitGroup{}
-	errch := make(chan error)
+	errch := make(chan error, 3)
 
 	wg.Add(3)
 
