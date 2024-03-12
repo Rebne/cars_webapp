@@ -13,30 +13,19 @@ margin: 20px;
 font-style: normal;
 }
 
-.light-body {
-background-color: #fdfdfd;
-}
-
-.dark-body {
-background-color: #24282f;
-}
-
-.dark-section {
-background-color: #2f343c;
-}
-
 summary::marker {
 color: #0066cc;
 font-size: 1.3em;
-
 }
 
 form {
 border: none;
 }
+
 input {
 border: none;
 }
+
 .form-container th {
 background: #fcba3c;
 background: linear-gradient(to bottom, #fcba3c 0%, #fb9807 100%);
@@ -78,6 +67,23 @@ padding: 20px;
 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
 }
 
+.light-body {
+background-color: #fdfdfd;
+}
+
+.dark-body {
+background-color: #24282f;
+}
+
+.dark-body form {
+background-color: #2f343c;
+
+}
+
+.dark-body td,.dark-body th {
+border-color: #24282f;
+}
+
 button {
 border-radius: 2px;
 font-size: 15px;
@@ -94,7 +100,6 @@ height: 2em;
 margin: 0
 
 }
-
 
 .hidden-content {
 display: none;
@@ -145,15 +150,19 @@ height: 1.4rem;
 }
 
 #close-button {
-    background-color: #c22048;
+background-color: #c22048;
 }
 
 .dark-light {
-    position: relative;
-    right: 0;
+position: relative;
+right: 0;
 }
 #dark-button {
-    background-color: #24282f;
+background-color: #24282f;
+}
+
+.hidden {
+display: none;
 }
 
 
@@ -212,20 +221,20 @@ height: 1.4rem;
 
         <button type="submit">apply filters</button>
         <button form="compare-form" type="submit" id="submit-button">compare</button>
-        <form id="dark-light-mode" action="/" method="PUT">
-            <button form="dark-light-mode" type="submit" class="dark-light" id="{{if .CarData.IsDark}}light-button{{else}}dark-button{{end}}">
-                {{if .CarData.IsDark}}Light{{else}}Dark{{end}} mode</button>
-        </form>
 
+<!-- Dark/Light mode -->
+        <button form="dark-light-mode" type="submit" class="dark-light" id="{{if .CarData.IsDark}}light-button{{else}}dark-button{{end}}">
+            {{if .CarData.IsDark}}Light{{else}}Dark{{end}} mode</button>
 </form>
+<form class="hidden" id="dark-light-mode" action="{{if .CarData.IsDark}}/{{else}}/dark{{end}}" method="GET"></form>
 
 <!-- Compare popup window -->
 <p class="warning-message">{{.CarData.Message}}</p>
 {{if .CarData.IsPopup}}
 <div class="popup">
-    <form method="GET" action="/">
-        <button type="submit" id="close-button">X</button>
+    <form class="hidden" id="close-form" method="GET" action="{{if .CarData.IsDark}}/dark{{else}}/{{end}}">
     </form>
+    <button type="submit" id="close-button" form="close-form">X</button>
     <table class="popup-table">
         {{$car1 := (index .CarData.CompareModels 0)}}
         {{$car2 := (index .CarData.CompareModels 1)}}
@@ -289,7 +298,7 @@ height: 1.4rem;
 {{end}}
 
 <!-- The main display/form of cars -->
-<form class="form-container" id="compare-form" method="POST" action="/">
+<form class="form-container" id="compare-form" method="POST" action="{{if .CarData.IsDark}}/dark{{else}}/{{end}}">
     <table>
         <tr>
             <th>Image</th>

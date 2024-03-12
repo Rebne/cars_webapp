@@ -152,50 +152,60 @@ func saveCache(cache map[string]float32) {
 		log.Fatal(err)
 	}
 }
+
+func indexHandler(w http.ResponseWriter, r *http.Request, isDark bool) {
+	carData, err := getCarDataFromAPI()
+	if err != nil {
+		fmt.Println("Error getting car data from API:", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	if isDark {
+		carData.IsDark = true
+	}
+
+	w.Header().Set("Content-type", "text/html")
+
+	carData.IsPopup = false
+
+	if r.Method == "POST" {
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		}
+		var count int
+
+		for range r.Form["option"] {
+			count++
+		}
+		if count != 2 {
+			carData.Message = "You must check 2 checkboxes"
+
+		} else {
+			carData.IsPopup = true
+			for _, carID := range r.Form["option"] {
+				model := getCarModel(carID, &carData)
+				carData.CompareModels = append(carData.CompareModels, model)
+				// incrementring cache after user interacting with model
+				incrementCache(model.Name, preferenceCache, 1.0)
+			}
+		}
+	}
+	saveCache(preferenceCache)
+	sortModelsInCarData(&carData, preferenceCache)
+	renderTemplate(w, carData, templateIndex)
+
+}
 func main() {
 
 	port := ":8080"
 	localHost := "http://localhost"
 
+	http.HandleFunc("/dark", func(w http.ResponseWriter, r *http.Request) {
+		indexHandler(w, r, true)
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		carData, err := getCarDataFromAPI()
-		if err != nil {
-			fmt.Println("Error getting car data from API:", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		fmt.Println(carData.IsDark)
-
-		w.Header().Set("Content-type", "text/html")
-
-		carData.IsPopup = false
-
-		if r.Method == "POST" {
-			if err := r.ParseForm(); err != nil {
-				http.Error(w, "Failed to parse form", http.StatusBadRequest)
-			}
-			var count int
-
-			for range r.Form["option"] {
-				count++
-			}
-			if count != 2 {
-				carData.Message = "You must check 2 checkboxes"
-			} else {
-				carData.IsPopup = true
-				for _, carID := range r.Form["option"] {
-					model := getCarModel(carID, &carData)
-					carData.CompareModels = append(carData.CompareModels, model)
-					// incrementring cache after user interacting with model
-					incrementCache(model.Name, preferenceCache, 1.0)
-				}
-			}
-		}
-		saveCache(preferenceCache)
-		sortModelsInCarData(&carData, preferenceCache)
-		renderTemplate(w, carData, templateIndex)
-
+		indexHandler(w, r, false)
 	})
 
 	// Handle the "/filtered" route
