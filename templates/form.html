@@ -10,7 +10,19 @@
 body {
 font-family: Helvetica, sans-serif;
 margin: 20px;
-font-style: normal
+font-style: normal;
+}
+
+.light-body {
+background-color: #fdfdfd;
+}
+
+.dark-body {
+background-color: #24282f;
+}
+
+.dark-section {
+background-color: #2f343c;
 }
 
 summary::marker {
@@ -136,9 +148,18 @@ height: 1.4rem;
     background-color: #c22048;
 }
 
+.dark-light {
+    position: relative;
+    right: 0;
+}
+#dark-button {
+    background-color: #24282f;
+}
+
+
     </style>
 </head>
-<body>
+<body class="{{if .CarData.IsDark}}dark-body{{else}}light-body{{end}}">
     <!-- Logo text -->
     <div style="display: flex; align-items: center; padding-left: 20px;">
         <h1 style="color:#0066cc">auto</h1>
@@ -191,6 +212,10 @@ height: 1.4rem;
 
         <button type="submit">apply filters</button>
         <button form="compare-form" type="submit" id="submit-button">compare</button>
+        <form id="dark-light-mode" action="/" method="PUT">
+            <button form="dark-light-mode" type="submit" class="dark-light" id="{{if .CarData.IsDark}}light-button{{else}}dark-button{{end}}">
+                {{if .CarData.IsDark}}Light{{else}}Dark{{end}} mode</button>
+        </form>
 
 </form>
 

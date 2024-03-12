@@ -22,6 +22,7 @@ type CarData struct {
 	CarModels     []CarModel     `json:"carModels"`
 	Message       string
 	IsPopup       bool
+	IsDark        bool //`default:"false"`
 	CompareModels []CarModel
 }
 
@@ -163,6 +164,8 @@ func main() {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+
+		fmt.Println(carData.IsDark)
 
 		w.Header().Set("Content-type", "text/html")
 
